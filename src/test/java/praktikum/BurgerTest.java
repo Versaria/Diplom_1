@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Locale;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +31,8 @@ public class BurgerTest {
 
     @Before
     public void setUp() {
+        // Устанавливаем локаль для корректного форматирования чисел в тестах
+        Locale.setDefault(Locale.US);
         mocks = MockitoAnnotations.openMocks(this);
         burger = new Burger();
 
@@ -193,90 +197,78 @@ public class BurgerTest {
     }
 
     /**
-     * Тест проверяет наличие информации о цене в чеке
-     * Чек должен содержать строку с общей стоимостью бургера
+     * Тест проверяет полную структуру чека для бургера без ингредиентов
+     * Проверяет корректность форматирования и наличие всех обязательных элементов
      */
     @Test
-    public void testGetReceiptContainsPrice() {
-        // Arrange: устанавливаем булочку
-        burger.setBuns(mockBun);
-
-        // Act: получаем чек
-        String receipt = burger.getReceipt();
-
-        // Assert: проверяем наличие цены
-        assertTrue("Чек должен содержать общую стоимость", receipt.contains("Price:"));
-    }
-
-    /**
-     * Тест проверяет наличие названия булочки в чеке без ингредиентов
-     * Даже без ингредиентов чек должен содержать информацию о булочке
-     */
-    @Test
-    public void testGetReceiptWithNoIngredientsContainsBunName() {
+    public void testGetReceiptWithoutIngredients() {
         // Arrange: устанавливаем только булочку
         burger.setBuns(mockBun);
 
         // Act: получаем чек
         String receipt = burger.getReceipt();
 
-        // Assert: проверяем наличие названия булочки
-        assertTrue("Чек должен содержать название булочки", receipt.contains("black bun"));
+        // Assert: проверяем полную структуру чека
+        String expected = String.format(
+                "(==== black bun ====)%n" +
+                        "(==== black bun ====)%n" +
+                        "%n" +
+                        "Price: 200.000000%n"
+        );
+        assertEquals("Чек без ингредиентов должен соответствовать ожидаемой структуре",
+                expected, receipt);
     }
 
     /**
-     * Тест проверяет наличие разделителей в чеке
-     * Чек должен иметь правильное форматирование с разделителями
+     * Тест проверяет полную структуру чека для бургера с одним ингредиентом
+     * Проверяет корректность отображения ингредиента и расчета стоимости
      */
     @Test
-    public void testGetReceiptWithNoIngredientsContainsSeparators() {
-        // Arrange: устанавливаем только булочку
+    public void testGetReceiptWithOneIngredient() {
+        // Arrange: создаем бургер с булочкой и одним ингредиентом
         burger.setBuns(mockBun);
+        burger.addIngredient(firstIngredient);
 
         // Act: получаем чек
         String receipt = burger.getReceipt();
 
-        // Assert: проверяем наличие разделителей
-        assertTrue("Чек должен содержать разделители",
-                receipt.contains("(====") && receipt.contains("===)"));
+        // Assert: проверяем полную структуру чека
+        String expected = String.format(
+                "(==== black bun ====)%n" +
+                        "= sauce hot sauce =%n" +
+                        "(==== black bun ====)%n" +
+                        "%n" +
+                        "Price: 250.000000%n"
+        );
+        assertEquals("Чек с одним ингредиентом должен соответствовать ожидаемой структуре",
+                expected, receipt);
     }
 
     /**
-     * Тест проверяет что после удаления ингредиента чек содержит оставшийся ингредиент
-     * Удаление не должно влиять на отображение других ингредиентов
+     * Тест проверяет полную структуру чека для бургера с двумя ингредиентами
+     * Проверяет корректность отображения нескольких ингредиентов и расчета стоимости
      */
     @Test
-    public void testReceiptContainsRemainingIngredientAfterRemoval() {
-        // Arrange: создаем бургер с двумя ингредиентами
+    public void testGetReceiptWithTwoIngredients() {
+        // Arrange: создаем бургер с булочкой и двумя ингредиентами
         burger.setBuns(mockBun);
         burger.addIngredient(firstIngredient);
         burger.addIngredient(secondIngredient);
 
-        // Act: удаляем первый ингредиент
-        burger.removeIngredient(0);
-
-        // Assert: проверяем что второй ингредиент остался в чеке
+        // Act: получаем чек
         String receipt = burger.getReceipt();
-        assertTrue("Чек должен содержать оставшийся ингредиент", receipt.contains("cutlet"));
-    }
 
-    /**
-     * Тест проверяет что удаленный ингредиент отсутствует в чеке
-     * После удаления ингредиент не должен отображаться в финальном чеке
-     */
-    @Test
-    public void testReceiptDoesNotContainRemovedIngredient() {
-        // Arrange: создаем бургер с двумя ингредиентами
-        burger.setBuns(mockBun);
-        burger.addIngredient(firstIngredient);
-        burger.addIngredient(secondIngredient);
-
-        // Act: удаляем первый ингредиент
-        burger.removeIngredient(0);
-
-        // Assert: проверяем что удаленный ингредиент отсутствует
-        String receipt = burger.getReceipt();
-        assertFalse("Чек не должен содержать удаленный ингредиент", receipt.contains("hot sauce"));
+        // Assert: проверяем полную структуру чека
+        String expected = String.format(
+                "(==== black bun ====)%n" +
+                        "= sauce hot sauce =%n" +
+                        "= filling cutlet =%n" +
+                        "(==== black bun ====)%n" +
+                        "%n" +
+                        "Price: 350.000000%n"
+        );
+        assertEquals("Чек с двумя ингредиентами должен соответствовать ожидаемой структуре",
+                expected, receipt);
     }
 
     /**
