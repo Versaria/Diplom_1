@@ -1,0 +1,55 @@
+# Build output
+target/
+build/
+out/
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+
+# Eclipse
+.settings/
+.project
+.classpath
+bin/
+
+# NetBeans
+nbproject/
+nb-configuration.xml
+
+# Log files
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Maven
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+
+# JaCoCo
+jacoco.exec
+*.exec
+
+# Temporary files
+*.tmp
+*.temp
+
+# System files
+*.orig
+*.bak
