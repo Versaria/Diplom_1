@@ -1,4 +1,4 @@
-# Diplom_1 
+# Diplom_1
 
 # Юнит-тестирование Stellar Burgers 🍔
 
